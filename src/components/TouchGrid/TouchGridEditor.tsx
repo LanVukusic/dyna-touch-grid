@@ -24,8 +24,8 @@ const isColliding = (p1: TouchGridPosition, p2: TouchGridPosition): boolean => {
  * the layout of a TouchGrid. It allows moving and resizing items using
  * drag-and-drop with snap-to-grid functionality.
  */
-export const TouchGridEditor: React.FC<TouchGridProps> = (props) => {
-  const [items, setItems] = useState<TouchGridInstance<any>[]>(props.items);
+export const TouchGridEditor = ({ settings }: { settings: TouchGridProps }) => {
+  const [items, setItems] = useState<TouchGridInstance<any>[]>(settings.items);
   const [cellSize, setCellSize] = useState({ width: 0, height: 0 });
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
@@ -34,11 +34,11 @@ export const TouchGridEditor: React.FC<TouchGridProps> = (props) => {
     if (gridContainerRef.current) {
       const { clientWidth, clientHeight } = gridContainerRef.current;
       setCellSize({
-        width: clientWidth / props.width,
-        height: clientHeight / props.height,
+        width: clientWidth / settings.width,
+        height: clientHeight / settings.height,
       });
     }
-  }, [props.width, props.height]);
+  }, [settings.width, settings.height]);
 
   /**
    * A dnd-kit modifier that snaps drag movements to the calculated grid cell size.
@@ -69,7 +69,9 @@ export const TouchGridEditor: React.FC<TouchGridProps> = (props) => {
     }
 
     const draggedItemIndex = items.findIndex((i) => i.id === instance.id);
-    if (draggedItemIndex === -1) return;
+    if (draggedItemIndex === -1) {
+      return;
+    }
 
     const draggedItem = items[draggedItemIndex];
     const newPosition = { ...draggedItem.position };
@@ -90,8 +92,8 @@ export const TouchGridEditor: React.FC<TouchGridProps> = (props) => {
     // Boundary checks to ensure the item stays within the grid.
     newPosition.x = Math.max(0, newPosition.x);
     newPosition.y = Math.max(0, newPosition.y);
-    newPosition.xspan = Math.min(newPosition.xspan, props.width - newPosition.x);
-    newPosition.yspan = Math.min(newPosition.yspan, props.height - newPosition.y);
+    newPosition.xspan = Math.min(newPosition.xspan, settings.width - newPosition.x);
+    newPosition.yspan = Math.min(newPosition.yspan, settings.height - newPosition.y);
 
     // Collision checks against all other items.
     const hasCollision = items.some(
@@ -113,15 +115,21 @@ export const TouchGridEditor: React.FC<TouchGridProps> = (props) => {
     <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGridModifier]}>
       <div ref={gridContainerRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
         {/* The renderer acts as the visual background for the editor. */}
-        <TouchGridRenderer {...props} items={items} />
+        <TouchGridRenderer
+          settings={{
+            height: settings.height,
+            width: settings.width,
+            items,
+          }}
+        />
 
         {/* Render a draggable overlay for each item in the grid. */}
         {items.map((instance) => (
           <DraggableGridItem
             key={instance.id}
             instance={instance}
-            gridWidth={props.width}
-            gridHeight={props.height}
+            gridWidth={settings.width}
+            gridHeight={settings.height}
           />
         ))}
       </div>
