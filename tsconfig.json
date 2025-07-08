@@ -14,8 +14,7 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "declaration": true,
-    "declarationDir": "dist",
+
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"],
