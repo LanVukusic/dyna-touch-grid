@@ -1,6 +1,6 @@
 {
   "name": "dyna-touch-grid",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "type": "module",
   "description": "A flexible and powerful React library for creating draggable and resizable grid layouts with touch support.",
   "author": "Lan Vukušič <info@lanvukusic.com>",
