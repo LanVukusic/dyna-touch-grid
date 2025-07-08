@@ -4,11 +4,9 @@ import React from 'react';
 // =================================================================
 
 // Generic TouchGridItem that can be used with any type of data or component.
-export interface TouchGridItem<T> {
-  label: string;
-  description?: string;
+export type TouchGridItem<T> = {
   Component: React.FC<T>;
-}
+} & T;
 
 // Defines the position and size of an item on the grid.
 export interface TouchGridPosition {
