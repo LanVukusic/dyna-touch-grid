@@ -1,16 +1,19 @@
 import React from 'react';
-import { TouchGridProps } from './TouchGridTypes';
+import { TouchGridProps, TouchGridStyleProps } from './TouchGridTypes';
 
-export const TouchGridRenderer = ({ settings }: { settings: TouchGridProps }) => {
-  const { width, height, items } = settings;
-
+export const TouchGridRenderer = ({
+  items,
+  height,
+  width,
+  gap,
+}: TouchGridProps & TouchGridStyleProps) => {
   const gridContainerStyle: React.CSSProperties = {
     display: 'grid',
     gridTemplateColumns: `repeat(${width}, 1fr)`,
     gridTemplateRows: `repeat(${height}, 1fr)`,
     width: '100%',
     height: '100%',
-    gap: '0.5rem',
+    gap,
     // padding: '10px',
     boxSizing: 'border-box',
   };
@@ -27,7 +30,7 @@ export const TouchGridRenderer = ({ settings }: { settings: TouchGridProps }) =>
           gridColumnEnd: `span ${position.xspan}`,
           gridRowStart: position.y + 1,
           gridRowEnd: `span ${position.yspan}`,
-          border: '1px solid #ddd',
+          // border:   '1px solid #ddd',
           // borderRadius: '8px',
           // padding: '1rem',
           display: 'flex',
@@ -37,7 +40,7 @@ export const TouchGridRenderer = ({ settings }: { settings: TouchGridProps }) =>
         };
 
         return (
-          <div key={gridItem.item.id} style={itemStyle}>
+          <div key={gridItem.id} style={itemStyle}>
             <Component {...itemProps} />
           </div>
         );

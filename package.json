@@ -1,11 +1,40 @@
 {
-  "name": "mantine-vite-template",
-  "private": true,
+  "name": "dyna-touch-grid",
+  "private": false,
+  "version": "1.0.0",
   "type": "module",
-  "version": "0.0.0",
+  "description": "A flexible and powerful React library for creating draggable and resizable grid layouts with touch support.",
+  "author": "Your Name <you@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/dyna-touch-grid.git"
+  },
+  "keywords": [
+    "react",
+    "grid",
+    "dnd",
+    "drag-and-drop",
+    "resizable",
+    "touch",
+    "layout"
+  ],
+  "main": "./dist/dyna-touch-grid.umd.js",
+  "module": "./dist/dyna-touch-grid.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/dyna-touch-grid.es.js",
+      "require": "./dist/dyna-touch-grid.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "npm run eslint && npm run stylelint",
@@ -20,17 +49,12 @@
     "storybook:build": "storybook build"
   },
   "dependencies": {
+    "@dnd-kit/modifiers": "^9.0.0"
+  },
+  "peerDependencies": {
     "@dnd-kit/core": "^6.3.1",
-    "@dnd-kit/modifiers": "^9.0.0",
-    "@mantine/core": "8.1.0",
-    "@mantine/hooks": "8.1.0",
-    "@storybook/global": "^5.0.0",
     "react": "^19.1.0",
-    "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.2",
-    "uuid": "^11.1.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",

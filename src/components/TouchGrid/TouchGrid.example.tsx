@@ -71,12 +71,12 @@ const OrangeComponent: React.FC = () => (
 
 // 2. Define the items that can be placed on the grid.
 const items: TouchGridItem<any>[] = [
-  { id: 1, label: 'Red', Component: RedComponent },
-  { id: 2, label: 'Blue', Component: BlueComponent },
-  { id: 3, label: 'Green', Component: GreenComponent },
-  { id: 4, label: 'Yellow', Component: YellowComponent },
-  { id: 5, label: 'Purple', Component: PurpleComponent },
-  { id: 6, label: 'Orange', Component: OrangeComponent },
+  { label: 'Red', Component: RedComponent },
+  { label: 'Blue', Component: BlueComponent },
+  { label: 'Green', Component: GreenComponent },
+  { label: 'Yellow', Component: YellowComponent },
+  { label: 'Purple', Component: PurpleComponent },
+  { label: 'Orange', Component: OrangeComponent },
 ];
 
 // 3. Define the instances of the items on the grid, with their positions and spans.

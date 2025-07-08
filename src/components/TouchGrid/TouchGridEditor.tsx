@@ -1,135 +1,53 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { DndContext, DragEndEvent, Modifiers } from '@dnd-kit/core';
+import React from 'react';
+import { DndContext } from '@dnd-kit/core';
+import { useTouchGrid } from '../../hooks/useTouchGrid';
 import { DraggableGridItem } from './DraggableGridItem';
 import { TouchGridRenderer } from './TouchGridRenderer';
-import { TouchGridInstance, TouchGridPosition, TouchGridProps } from './TouchGridTypes';
+import { TouchGridEditorProps } from './TouchGridTypes';
 
 /**
- * Checks if two grid positions are colliding (overlapping).
- * @param p1 The first position.
- * @param p2 The second position.
- * @returns True if they collide, false otherwise.
+ * The TouchGridEditor is a user-friendly component for building interactive,
+ * draggable, and resizable grid layouts. It is built on top of the headless
+ * `useTouchGrid` hook and provides a default rendering implementation.
  */
-const isColliding = (p1: TouchGridPosition, p2: TouchGridPosition): boolean => {
-  return (
-    p1.x < p2.x + p2.xspan &&
-    p1.x + p1.xspan > p2.x &&
-    p1.y < p2.y + p2.yspan &&
-    p1.y + p1.yspan > p2.y
-  );
-};
-
-/**
- * The TouchGridEditor component provides a user interface for editing
- * the layout of a TouchGrid. It allows moving and resizing items using
- * drag-and-drop with snap-to-grid functionality.
- */
-export const TouchGridEditor = ({ settings }: { settings: TouchGridProps }) => {
-  const [items, setItems] = useState<TouchGridInstance<any>[]>(settings.items);
-  const [cellSize, setCellSize] = useState({ width: 0, height: 0 });
-  const gridContainerRef = useRef<HTMLDivElement>(null);
-
-  // Calculate the pixel dimensions of a grid cell whenever the container size or grid dimensions change.
-  useLayoutEffect(() => {
-    if (gridContainerRef.current) {
-      const { clientWidth, clientHeight } = gridContainerRef.current;
-      setCellSize({
-        width: clientWidth / settings.width,
-        height: clientHeight / settings.height,
-      });
-    }
-  }, [settings.width, settings.height]);
-
-  /**
-   * A dnd-kit modifier that snaps drag movements to the calculated grid cell size.
-   * This ensures all interactions are perfectly aligned with the grid.
-   */
-  const snapToGridModifier: Modifiers[0] = ({ transform }) => {
-    if (cellSize.width === 0 || cellSize.height === 0) {
-      return transform; // Avoid division by zero if cell size isn't calculated yet.
-    }
-    return {
-      ...transform,
-      x: Math.round(transform.x / cellSize.width) * cellSize.width,
-      y: Math.round(transform.y / cellSize.height) * cellSize.height,
-    };
-  };
-
-  /**
-   * This function is the core of the editor's logic. It is called at the end of a
-   * drag operation and is responsible for updating the grid's state.
-   */
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, delta } = event;
-    const { instance, type } = active.data.current || {};
-
-    // Exit if the drag was invalid or the cell size is not yet calculated.
-    if (!instance || !type || cellSize.width === 0 || cellSize.height === 0) {
-      return;
-    }
-
-    const draggedItemIndex = items.findIndex((i) => i.id === instance.id);
-    if (draggedItemIndex === -1) {
-      return;
-    }
-
-    const draggedItem = items[draggedItemIndex];
-    const newPosition = { ...draggedItem.position };
-
-    // The modifier has already snapped the pixel delta, so we can reliably convert it to grid units.
-    const dx = Math.round(delta.x / cellSize.width);
-    const dy = Math.round(delta.y / cellSize.height);
-
-    // Apply changes based on the drag type (move or resize).
-    if (type === 'resize') {
-      newPosition.xspan = Math.max(1, newPosition.xspan + dx);
-      newPosition.yspan = Math.max(1, newPosition.yspan + dy);
-    } else if (type === 'move') {
-      newPosition.x += dx;
-      newPosition.y += dy;
-    }
-
-    // Boundary checks to ensure the item stays within the grid.
-    newPosition.x = Math.max(0, newPosition.x);
-    newPosition.y = Math.max(0, newPosition.y);
-    newPosition.xspan = Math.min(newPosition.xspan, settings.width - newPosition.x);
-    newPosition.yspan = Math.min(newPosition.yspan, settings.height - newPosition.y);
-
-    // Collision checks against all other items.
-    const hasCollision = items.some(
-      (item) => item.id !== draggedItem.id && isColliding(newPosition, item.position)
-    );
-
-    if (hasCollision) {
-      console.warn('Collision detected! Reverting move/resize.');
-      return; // Revert the change.
-    }
-
-    // If no collision, update the state with the new item position.
-    const newItems = [...items];
-    newItems[draggedItemIndex] = { ...draggedItem, position: newPosition };
-    setItems(newItems);
-  };
+export const TouchGridEditor: React.FC<TouchGridEditorProps> = ({
+  items: inputItems,
+  height,
+  width,
+  onChange,
+  renderers,
+  gap,
+}) => {
+  // All the complex state management and event handling is managed by the hook.
+  const { items, gridContainerRef, handleDragEnd, snapToGridModifier, cellSize } = useTouchGrid({
+    height,
+    width,
+    items: inputItems,
+    onChange,
+    gap,
+  });
 
   return (
+    // DndContext provides the drag-and-drop functionality.
+    // The snapToGridModifier ensures all interactions are aligned to the grid.
     <DndContext onDragEnd={handleDragEnd} modifiers={[snapToGridModifier]}>
       <div ref={gridContainerRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* The renderer acts as the visual background for the editor. */}
-        <TouchGridRenderer
-          settings={{
-            height: settings.height,
-            width: settings.width,
-            items,
-          }}
-        />
+        {/* First, render the actual components in their current positions. */}
+        <TouchGridRenderer items={items} height={height} width={width} gap={gap} />
 
-        {/* Render a draggable overlay for each item in the grid. */}
+        {/*
+          Then, render a draggable and resizable overlay for each item.
+          These overlays are what the user actually interacts with.
+        */}
         {items.map((instance) => (
           <DraggableGridItem
             key={instance.id}
             instance={instance}
-            gridWidth={settings.width}
-            gridHeight={settings.height}
+            gridWidth={width}
+            gridHeight={height}
+            renderers={renderers}
+            cellSize={cellSize}
+            gap={gap}
           />
         ))}
       </div>
