@@ -1,4 +1,4 @@
-# Touch Grid Library
+# Dyna Touch Grid
 
 A flexible and powerful React library for creating draggable and resizable grid layouts with touch support.
 
@@ -14,6 +14,14 @@ The Touch Grid Library provides a set of components and a headless hook to easil
 - **Customizable Rendering:** Override the default components to create a unique design.
 - **Controlled and Uncontrolled Modes:** Use it as a self-contained component or manage the state from a parent.
 - **Touch Support:** Works seamlessly on touch devices.
+
+## Installation
+
+To install the library, run the following command:
+
+```bash
+npm install dyna-touch-grid
+```
 
 ## Core Components
 
@@ -31,8 +39,7 @@ Here's a basic example of how to use the `TouchGridEditor` to create a simple 2x
 
 ```tsx
 import React, { useState } from 'react';
-import { TouchGridEditor } from './components/TouchGrid/TouchGridEditor';
-import { TouchGridInstance } from './components/TouchGrid/TouchGridTypes';
+import { TouchGridEditor, TouchGridInstance } from 'dyna-touch-grid';
 
 const MyComponent = ({ text }: { text: string }) => (
   <div style={{ padding: '1rem', textAlign: 'center' }}>{text}</div>
@@ -87,12 +94,12 @@ Here's an example of how to provide custom components for the move overlay and r
 
 ```tsx
 import React, { useState } from 'react';
-import { TouchGridEditor } from './components/TouchGrid/TouchGridEditor';
 import {
   MoveOverlayProps,
   ResizeHandleProps,
+  TouchGridEditor,
   TouchGridInstance,
-} from './components/TouchGrid/TouchGridTypes';
+} from 'dyna-touch-grid';
 
 // A custom move overlay
 const CustomMoveOverlay: React.FC<MoveOverlayProps> = ({ isMoving, children }) => (

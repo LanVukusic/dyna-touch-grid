@@ -4,11 +4,11 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A flexible and powerful React library for creating draggable and resizable grid layouts with touch support.",
-  "author": "Your Name <you@example.com>",
+  "author": "Lan Vukušič <info@lanvukusic.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/dyna-touch-grid.git"
+    "url": "https://github.com/LanVukusic/dyna-touch-grid"
   },
   "keywords": [
     "react",
@@ -34,7 +34,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
+    "prepublishOnly": "npm run build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "npm run eslint && npm run stylelint",
