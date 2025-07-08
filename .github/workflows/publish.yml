@@ -22,9 +22,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build library
-        run: yarn build
-
       - name: Publish to npm registry
         run: npm publish
         env:
